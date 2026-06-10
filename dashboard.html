@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bảng chấm bài · IELTS Writing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rust:#b14a28;
+  --bg:
+    radial-gradient(820px 520px at 14% 18%, rgba(217,142,106,.42), transparent 60%),
+    radial-gradient(720px 520px at 86% 12%, rgba(236,201,154,.55), transparent 62%),
+    radial-gradient(760px 620px at 78% 88%, rgba(120,170,150,.34), transparent 62%),
+    radial-gradient(680px 560px at 30% 95%, rgba(196,120,150,.28), transparent 60%),
+    radial-gradient(1000px 640px at 50% -8%, #fef8ee 0%, #f6ead7 52%, #efe1ca 100%);
+  --blob1:#ecc99a;--blob2:#d98e6a;
+  --panel:rgba(255,253,248,.42);--card:rgba(255,253,248,.55);--card2:rgba(255,255,255,.42);
+  --field:rgba(255,255,255,.72);--line:rgba(255,255,255,.7);--hair:rgba(140,100,60,.16);
+  --ink:#3d3226;--ink-strong:#2c2318;--muted:#8a7c6a;
+  --chip:rgba(255,255,255,.5);--btn-bg:rgba(255,255,255,.55);--btn-text:#b14a28;
+  --sheen:linear-gradient(155deg,rgba(255,255,255,.55),rgba(255,255,255,0) 42%);
+  --shadow:0 14px 50px rgba(124,78,40,.13),0 3px 10px rgba(124,78,40,.07),inset 0 1px 0 rgba(255,255,255,.85);
+}
+body.dark{
+  --bg:
+    radial-gradient(820px 520px at 14% 18%, rgba(190,95,150,.42), transparent 60%),
+    radial-gradient(720px 520px at 86% 12%, rgba(214,150,80,.40), transparent 62%),
+    radial-gradient(760px 620px at 78% 88%, rgba(70,135,155,.42), transparent 62%),
+    radial-gradient(680px 560px at 32% 96%, rgba(120,90,170,.40), transparent 60%),
+    radial-gradient(1000px 660px at 50% 0%, #342b3d 0%, #261f2e 52%, #1a1622 100%);
+  --blob1:#7a4f8c;--blob2:#356a96;
+  --panel:rgba(40,34,46,.36);--card:rgba(52,46,60,.40);--card2:rgba(255,255,255,.07);
+  --field:rgba(255,255,255,.10);--line:rgba(255,255,255,.18);--hair:rgba(255,255,255,.12);
+  --ink:rgba(246,241,238,.9);--ink-strong:#fdfaf7;--muted:rgba(246,241,238,.58);
+  --chip:rgba(255,255,255,.12);--btn-bg:rgba(255,255,255,.12);--btn-text:#f0b89c;
+  --sheen:linear-gradient(155deg,rgba(255,255,255,.14),rgba(255,255,255,0) 42%);
+  --shadow:0 18px 56px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.14);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:'Be Vietnam Pro',sans-serif;font-size:16px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;min-height:100vh;background:var(--bg) fixed;transition:background .4s}
+body::before,body::after{content:"";position:fixed;z-index:0;border-radius:50%;filter:blur(72px);pointer-events:none}
+body::before{width:440px;height:440px;background:var(--blob1);top:-100px;right:-70px;opacity:.5;animation:fl 19s ease-in-out infinite}
+body::after{width:400px;height:400px;background:var(--blob2);bottom:-130px;left:-90px;opacity:.4;animation:fl 24s ease-in-out infinite reverse}
+@keyframes fl{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,34px)}}
+
+.app{position:relative;z-index:1;max-width:1080px;margin:24px auto;border-radius:26px;overflow:hidden;
+  background:var(--panel);backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);
+  border:1px solid var(--line);box-shadow:var(--shadow)}
+
+.toolbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;padding:12px 18px;flex-wrap:wrap;
+  background:rgba(30,25,22,.55);backdrop-filter:blur(26px) saturate(150%);-webkit-backdrop-filter:blur(26px) saturate(150%);
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.dots{display:flex;gap:7px;margin-right:4px}
+.dots i{width:12px;height:12px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.toolbar .ttl{font-family:'Lora',serif;font-weight:600;font-size:15px;color:rgba(255,250,242,.94)}
+.toolbar .sp{margin-left:auto}
+.tg{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.12);color:#fff;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s}
+.tg:hover{background:rgba(255,255,255,.26);transform:translateY(-1px)}
+
+.body{padding:24px 28px 60px}
+.headrow{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.headrow h1{font-family:'Lora',serif;font-size:25px;font-weight:700;color:var(--ink-strong);margin:0}
+.headrow .sub{font-size:13.5px;color:var(--muted);margin-left:auto}
+
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:9px 16px;box-shadow:var(--shadow)}
+.stat b{font-family:'Lora',serif;font-size:20px;color:var(--ink-strong);display:block;line-height:1.1}
+.stat span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+
+.demo{font-size:12.5px;color:var(--ink);background:rgba(245,190,90,.18);border:1px solid rgba(220,170,90,.5);
+  border-radius:12px;padding:9px 14px;margin-bottom:18px}
+
+.seg{display:inline-flex;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:3px;margin-bottom:18px;box-shadow:var(--shadow)}
+.seg button{border:0;background:transparent;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:600;padding:8px 18px;border-radius:999px;cursor:pointer;transition:.15s}
+.seg button.on{background:linear-gradient(145deg,#c75a34,#9c3d1e);color:#fff;box-shadow:0 3px 10px rgba(150,60,30,.35)}
+.list{display:flex;flex-direction:column;gap:12px}
+.row{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;
+  background:var(--card);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--line);border-radius:18px;padding:15px 18px;box-shadow:var(--shadow);transition:.16s}
+.row::before{content:"";position:absolute;inset:0;pointer-events:none;background:var(--sheen)}
+.row>*{position:relative}
+.row:hover{transform:translateY(-2px)}
+.band{flex:0 0 auto;width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;background:var(--card2)}
+.band b{font-family:'Lora',serif;font-weight:700;font-size:19px;line-height:1}
+.band span{font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;opacity:.72;margin-top:1px}
+.band.hi{background:rgba(31,158,110,.14);border-color:#1f9e6e;color:#157a54}
+.band.mid{background:rgba(212,154,58,.16);border-color:#d49a3a;color:#a8631f}
+.band.lo{background:rgba(199,90,52,.14);border-color:#c75a34;color:#9c3d1e}
+body.dark .band.hi{color:#86d8c2;border-color:#3fae86}
+body.dark .band.mid{color:#e3b86a;border-color:#d49a3a}
+body.dark .band.lo{color:#f0937a;border-color:#d8694a}
+.info{flex:1;min-width:0}
+.info .nm{font-size:16px;font-weight:600;color:var(--ink-strong);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aitag{font-size:10.5px;font-weight:700;letter-spacing:.3px;color:#a8631f;background:rgba(245,190,90,.22);border:1px solid rgba(220,170,90,.5);padding:2px 8px;border-radius:20px}
+body.dark .aitag{color:#e3b86a}
+.info .em{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.info .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.tasktag{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--rust);background:var(--chip);border:1px solid var(--line);padding:3px 10px;border-radius:20px}
+body.dark .tasktag{color:#f0b89c}
+.mt{font-size:12px;color:var(--muted);display:inline-flex;align-items:center}
+.btn{flex:0 0 auto;border:1px solid var(--line);background:var(--btn-bg);color:var(--btn-text);font-family:inherit;font-weight:600;
+  font-size:14px;padding:11px 18px;border-radius:12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(145deg,#c75a34,#9c3d1e);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(150,60,30,.32)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .big{font-size:42px;margin-bottom:8px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:99;opacity:0;pointer-events:none;
+  background:rgba(30,25,22,.92);color:#fff;font-size:13.5px;padding:11px 18px;border-radius:12px;transition:.25s}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.ov{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,15,12,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.modal{max-width:540px;width:100%;max-height:84vh;overflow:auto;background:var(--card);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.mh{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--hair)}
+.mh h3{font-family:'Lora',serif;margin:0;font-size:17px;color:var(--ink-strong);flex:1}
+.mh .x{border:0;background:transparent;font-size:22px;color:var(--muted);cursor:pointer;line-height:1}
+.mb{padding:18px 20px;font-size:15px}
+.mb ol{margin:6px 0 0;padding-left:20px}
+.mb li{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="ttl">Noven · Bảng chấm bài</span>
+    <span class="sp"></span>
+    <button class="tg" title="Hướng dẫn" onclick="showHelp()">ℹ️</button>
+    <button class="tg" title="Làm mới" onclick="render()">↻</button>
+    <button class="tg" title="Sáng / Tối" onclick="document.body.classList.toggle('dark')">🌙</button>
+    <button class="tg" title="Toàn màn hình" onclick="toggleFS()">⛶</button>
+  </div>
+
+  <div class="body">
+    <div class="headrow">
+      <h1 id="pageTitle">Bài chờ duyệt</h1>
+      <span class="sub" id="today"></span>
+      <button class="btn" style="margin-left:14px" onclick="newExam('t1')">➕ Đề Task 1</button>
+      <button class="btn primary" style="margin-left:8px" onclick="newExam('t2')">➕ Đề Task 2</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="sPending">0</b><span>Đang chờ duyệt</span></div>
+      <div class="stat"><b id="sSent">0</b><span>Đã gửi</span></div>
+      <div class="stat"><b id="sTotal">0</b><span>Tổng bài</span></div>
+    </div>
+
+    <div class="seg">
+      <button id="tabPending" class="on" onclick="setTab('pending')">⏳ Chờ duyệt</button>
+      <button id="tabSent" onclick="setTab('sent')">✅ Đã gửi</button>
+    </div>
+
+    <div class="demo">🧪 Đây là bản xem trước với <b>dữ liệu mẫu</b>. Bấm “Chấm bài” để xem giao diện chấm mở ra đã điền sẵn. Khi nối Make xong, 2 danh sách này sẽ tự lấy bài thật từ Google Sheet.</div>
+
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<div class="ov" id="ovHelp" onclick="if(event.target===this)hideHelp()">
+  <div class="modal">
+    <div class="mh"><h3>ℹ️ Hướng dẫn — Bảng chấm bài</h3><button class="x" onclick="hideHelp()">×</button></div>
+    <div class="mb">
+      <p style="margin:0 0 12px">Đây là <b>trung tâm điều khiển</b>. Mỗi ngày bạn chỉ cần mở trang này.</p>
+      <ol>
+        <li><b>➕ Đề Task 1 / Đề Task 2</b> — soạn đề mới, rồi xuất file SCORM để up lên Moodle giao cho học viên.</li>
+        <li><b>⏳ Chờ duyệt</b> — bài học viên vừa nộp, AI đã chấm nháp sẵn. Bấm <b>“Chấm bài”</b> → sửa lại cho ưng → bấm <b>“Gửi cho học viên”</b>.</li>
+        <li><b>✅ Đã gửi</b> — bài đã trả cho học viên. Bấm <b>“Mở lại”</b> để xem lại, sửa hoặc gửi lại.</li>
+        <li>Trên thanh trên cùng: ↻ làm mới &nbsp;·&nbsp; 🌙 sáng/tối &nbsp;·&nbsp; ⛶ toàn màn hình.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* base64 UTF-8 — khớp với base64() của Make (an toàn dấu tiếng Việt) */
+function b64encU(str){ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,function(_,p){return String.fromCharCode("0x"+p);})); }
+
+/* ====== DỮ LIỆU MẪU (sẽ thay bằng dữ liệu thật từ Make/Sheet) ====== */
+var PENDING = [
+  {
+    subId: 101,
+    sub:{ title:"IELTS · Writing Task 2 (Agree/Disagree)", task:"Writing Task 2",
+      student:"Nguyễn Minh Anh", email:"minhanh@gmail.com", timeSpent:"38m 12s", submittedAt:"2026-06-10T01:20:00Z",
+      prompt:"Some people think that working from home brings more benefits than working in an office.\nTo what extent do you agree or disagree?",
+      essay:"In recent years, a growing number of people have come to beleive that remote work is far superior to traditional office jobs. While I partly agree, I would argue that the office still offers irreplaceable benefits.\n\nOn the one hand, working from home is undeniably convenient. Employees can save time and money which allow them to achieve a better work-life balance. Furthermore, staffs can arrange their own schedule around personal responsibilities.\n\nOn the other hand, the office environment fosters collaboration in ways that home cannot. Face-to-face communication makes teamwork more effective and helps new employees learn faster from their colleagues." },
+    ai:{ bands:{overall:6.0,c1:6.5,c2:6.0,c3:6.0,c4:5.5},
+      summary:"Trả lời đúng câu hỏi, quan điểm rõ ràng. Cần chắc tay hơn về ngữ pháp và từ học thuật để chạm 6.5–7.0.",
+      detail:{ d1:"Có nêu quan điểm rõ ở mở bài, đủ 2 mặt.", d2:"Liên kết ổn nhưng còn lặp 'On the one/other hand'.", d3:"Từ vựng khá, vài chỗ chưa chuẩn (staffs).", d4:"Mắc lỗi chia động từ & chính tả." },
+      fixes:[
+        {find:"beleive", type:"fix", fix:"believe", cat:"spell", note:"Sai chính tả: believe (i trước e)."},
+        {find:"which allow", type:"fix", fix:"which allows", cat:"grammar", note:"Chủ ngữ số ít → allows (subject–verb agreement)."},
+        {find:"staffs", type:"fix", fix:"staff members", cat:"vocab", note:"'staff' là danh từ tập hợp, không thêm -s."}
+      ],
+      comments:[
+        {cat:"praise", body:"Mở bài nêu quan điểm rõ ràng, **giữ phong độ** nha!"},
+        {cat:"coh", body:"Thêm 1 ví dụ cụ thể ở Body 1 để ý tưởng sâu hơn."}
+      ] }
+  },
+  {
+    subId: 102,
+    sub:{ title:"IELTS · Writing Task 1 (Line graph)", task:"Writing Task 1",
+      student:"Trần Quốc Bảo", email:"quocbao@gmail.com", timeSpent:"21m 47s", submittedAt:"2026-06-10T00:05:00Z", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzgwIiB2aWV3Qm94PSIwIDAgNjQwIDM4MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj4KPHJlY3Qgd2lkdGg9IjY0MCIgaGVpZ2h0PSIzODAiIGZpbGw9IiNmZmZmZmYiLz4KPHRleHQgeD0iMzIwIiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMyMjIiPk51bWJlciBvZiB2aXNpdG9ycyB0byB0aHJlZSBMb25kb24gbXVzZXVtcyAoMjAxMC0yMDE1KTwvdGV4dD4KPGxpbmUgeDE9IjcwIiB5MT0iMzIwIiB4Mj0iNjAwIiB5Mj0iMzIwIiBzdHJva2U9IiM4ODgiIHN0cm9rZS13aWR0aD0iMS41Ii8+CjxsaW5lIHgxPSI3MCIgeTE9IjcwIiB4Mj0iNzAiIHkyPSIzMjAiIHN0cm9rZT0iIzg4OCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHRleHQgeD0iMzAiIHk9IjMyNSIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzU1NSI+MDwvdGV4dD4KPHRleHQgeD0iMjQiIHk9IjI2MiIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzU1NSI+Mm08L3RleHQ+Cjx0ZXh0IHg9IjI0IiB5PSIxOTkiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM1NTUiPjRtPC90ZXh0Pgo8dGV4dCB4PSIyNCIgeT0iMTM2IiBmb250LXNpemU9IjExIiBmaWxsPSIjNTU1Ij42bTwvdGV4dD4KPHRleHQgeD0iODAiIHk9IjMzOCIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzU1NSI+MjAxMDwvdGV4dD4KPHRleHQgeD0iMTgwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM1NTUiPjIwMTE8L3RleHQ+Cjx0ZXh0IHg9IjI4MCIgeT0iMzM4IiBmb250LXNpemU9IjExIiBmaWxsPSIjNTU1Ij4yMDEyPC90ZXh0Pgo8dGV4dCB4PSIzODAiIHk9IjMzOCIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzU1NSI+MjAxMzwvdGV4dD4KPHRleHQgeD0iNDgwIiB5PSIzMzgiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM1NTUiPjIwMTQ8L3RleHQ+Cjx0ZXh0IHg9IjU2MCIgeT0iMzM4IiBmb250LXNpemU9IjExIiBmaWxsPSIjNTU1Ij4yMDE1PC90ZXh0Pgo8cG9seWxpbmUgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjE0YTI4IiBzdHJva2Utd2lkdGg9IjIuNSIgcG9pbnRzPSI4NiwxNjMgMTg2LDE1MCAyODYsMTY4IDM4NiwxNDAgNDg2LDEyMCA1NjYsMTAwIi8+Cjxwb2x5bGluZSBmaWxsPSJub25lIiBzdHJva2U9IiMzNTZhOTYiIHN0cm9rZS13aWR0aD0iMi41IiBwb2ludHM9Ijg2LDI1NyAxODYsMjUwIDI4NiwyMzggMzg2LDIzMiA0ODYsMjIwIDU2NiwyMTAiLz4KPHBvbHlsaW5lIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFmOWU2ZSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHBvaW50cz0iODYsMjg5IDE4NiwyODUgMjg2LDI3OCAzODYsMjcwIDQ4NiwyNTUgNTY2LDIzOCIvPgo8cmVjdCB4PSI0MDAiIHk9IjY0IiB3aWR0aD0iMTIiIGhlaWdodD0iMyIgZmlsbD0iI2IxNGEyOCIvPjx0ZXh0IHg9IjQxOCIgeT0iNjgiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM0NDQiPkJyaXRpc2ggTXVzZXVtPC90ZXh0Pgo8cmVjdCB4PSI0MDAiIHk9IjgwIiB3aWR0aD0iMTIiIGhlaWdodD0iMyIgZmlsbD0iIzM1NmE5NiIvPjx0ZXh0IHg9IjQxOCIgeT0iODQiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM0NDQiPlNjaWVuY2UgTXVzZXVtPC90ZXh0Pgo8cmVjdCB4PSI0MDAiIHk9Ijk2IiB3aWR0aD0iMTIiIGhlaWdodD0iMyIgZmlsbD0iIzFmOWU2ZSIvPjx0ZXh0IHg9IjQxOCIgeT0iMTAwIiBmb250LXNpemU9IjExIiBmaWxsPSIjNDQ0Ij5OYXR1cmFsIEhpc3Rvcnk8L3RleHQ+Cjwvc3ZnPg==",
+      prompt:"The line graph below shows the number of visitors to three museums in London between 2010 and 2015.\nSummarise the information by selecting and reporting the main features.",
+      essay:"The line graph illustrates the number of visitors to three museums in London between 2010 and 2015.\n\nOverall, the British Museum recieved the most visitors throughout the period, while the other two museums saw lower figures.\n\nIn 2010, the figure for the British Museum stood at around 5 million, whereas the Science Museum sat at just 2 million. The number of visitors to the British Museum then rose to 6 million in 2015. The Science Museum also increase steadily over the same period." },
+    ai:{ bands:{overall:6.0,c1:6.5,c2:6.0,c3:5.5,c4:5.5},
+      summary:"Có Overview không kèm số liệu — đúng chuẩn. Body 1 dùng static language tốt. Còn vài lỗi nhỏ về thì và chính tả.",
+      detail:{ d1:"Có Overview rõ, không liệt kê số — chuẩn Task 1.", d2:"Trình tự hợp lý.", d3:"Từ vựng mô tả ổn (stood at, sat at).", d4:"Lỗi thì ở câu cuối." },
+      fixes:[
+        {find:"recieved", type:"fix", fix:"received", cat:"spell", note:"i trước e: received."},
+        {find:"also increase steadily", type:"fix", fix:"also increased steadily", cat:"grammar", note:"Mô tả quá khứ → increased."}
+      ],
+      comments:[
+        {cat:"praise", body:"Overview **không kèm số liệu** — đúng chuẩn Task 1 nha!"},
+        {cat:"vocab", body:"Body 1 dùng static (stood at, sat at) rất chuẩn."}
+      ] }
+  },
+  {
+    subId: 103,
+    sub:{ title:"IELTS · Writing Task 2 (Opinion)", task:"Writing Task 2",
+      student:"Lê Thảo Vy", email:"thaovy@gmail.com", timeSpent:"15m 30s", submittedAt:"2026-06-09T15:40:00Z",
+      prompt:"Some people believe technology has made students lazier. To what extent do you agree or disagree?",
+      essay:"Nowadays, technology plays an important role in education. Some people argues that it brings more harm than good. In my opinion, the benefits outweighs the drawbacks.\n\nFirstly, technology makes learning more accessible. Students can access a wide range of informations online at any time, which helps them study independently." },
+    ai:{ bands:{overall:5.5,c1:6.0,c2:5.5,c3:5.5,c4:5.0},
+      summary:"Có quan điểm nhưng bài còn ngắn, ý chưa phát triển đủ. Mắc nhiều lỗi chia động từ.",
+      detail:{ d1:"Trả lời đúng nhưng thiếu phát triển ý (bài quá ngắn).", d2:"Mới có 1 đoạn thân bài.", d3:"Từ vựng cơ bản, có lỗi countable.", d4:"Nhiều lỗi subject–verb agreement." },
+      fixes:[
+        {find:"people argues", type:"fix", fix:"people argue", cat:"grammar", note:"'people' số nhiều → argue."},
+        {find:"benefits outweighs", type:"fix", fix:"benefits outweigh", cat:"grammar", note:"'benefits' số nhiều → outweigh."},
+        {find:"informations", type:"fix", fix:"information", cat:"vocab", note:"'information' không đếm được, không thêm -s."}
+      ],
+      comments:[
+        {cat:"other", body:"Bài còn **ngắn** — cần viết đủ Body 1, Body 2 và kết bài để đạt Task Response tốt nha."}
+      ] }
+  }
+];
+
+/* ====== BÀI ĐÃ GỬI (mẫu) — thật ra sẽ lấy bản cuối đã lưu trong Sheet ====== */
+var SENT = [
+  { subId:91, sentAt:"2026-06-09T09:15:00Z",
+    sub:{ title:"IELTS · Writing Task 2", task:"Writing Task 2", student:"Phạm Gia Hân", email:"giahan@gmail.com", timeSpent:"41m 03s", submittedAt:"2026-06-08T14:00:00Z",
+      prompt:"Many people believe that social media has a negative impact on society. Do you agree or disagree?",
+      essay:"Social media has become an integral part of modern life. While some argue it harms society, I believe its benefits outweigh the drawbacks when used responsibly.\n\nOn one hand, social media connects people across the globe and provides instant access to information. On the other hand, excessive use can lead to misinformation and reduced face-to-face interaction." },
+    ai:{ bands:{overall:6.5,c1:6.5,c2:6.5,c3:6.5,c4:6.0}, summary:"Bài cân đối, lập luận rõ ràng.", detail:{d1:"",d2:"",d3:"",d4:""}, fixes:[], comments:[{cat:"praise",body:"Lập luận 2 chiều rõ ràng, tốt!"}] } },
+  { subId:92, sentAt:"2026-06-08T20:30:00Z",
+    sub:{ title:"IELTS · Writing Task 1", task:"Writing Task 1", student:"Đỗ Khánh Linh", email:"khanhlinh@gmail.com", timeSpent:"19m 22s", submittedAt:"2026-06-08T11:00:00Z",
+      prompt:"The bar chart shows the percentage of households with internet access in four countries in 2000 and 2020.",
+      essay:"The bar chart compares the proportion of households with internet access in four countries in 2000 and 2020.\n\nOverall, all four countries saw a significant rise in internet access over the two decades, with the most dramatic growth occurring in the developing nations." },
+    ai:{ bands:{overall:6.0,c1:6.0,c2:6.5,c3:6.0,c4:5.5}, summary:"Có Overview tốt.", detail:{d1:"",d2:"",d3:"",d4:""}, fixes:[], comments:[{cat:"praise",body:"Overview khái quát xu hướng chuẩn."}] } }
+];
+
+/* ====== RENDER ====== */
+function fmtDate(iso){
+  try{ var d=new Date(iso); var p=function(n){return(n<10?"0":"")+n;};
+    return p(d.getDate())+"/"+p(d.getMonth()+1)+" · "+p(d.getHours())+":"+p(d.getMinutes()); }
+  catch(e){ return iso||""; }
+}
+function fmtBand(n){ n=parseFloat(n); return isNaN(n)?"–":(Math.round(n*2)/2).toFixed(1); }
+function bandClass(n){ n=parseFloat(n)||0; return n>=7?"hi":n>=6?"mid":"lo"; }
+
+var TAB="pending";
+function setTab(t){
+  TAB=t;
+  document.getElementById("tabPending").classList.toggle("on",t==="pending");
+  document.getElementById("tabSent").classList.toggle("on",t==="sent");
+  document.getElementById("pageTitle").textContent = t==="pending"?"Bài chờ duyệt":"Bài đã gửi";
+  render();
+}
+function render(){
+  var host=document.getElementById("list"); host.innerHTML="";
+  document.getElementById("sPending").textContent=PENDING.length;
+  document.getElementById("sSent").textContent=SENT.length;
+  document.getElementById("sTotal").textContent=PENDING.length+SENT.length;
+  document.getElementById("today").textContent="Hôm nay · "+fmtDate(new Date().toISOString()).split(" · ")[0];
+  var data = TAB==="pending"?PENDING:SENT;
+  if(!data.length){
+    host.innerHTML='<div class="empty"><div class="big">'+(TAB==="pending"?"🎉":"📭")+'</div>'+(TAB==="pending"?"Hết bài chờ duyệt rồi!":"Chưa có bài nào đã gửi.")+'</div>'; return;
+  }
+  data.forEach(function(it){
+    var s=it.sub, b=it.ai&&it.ai.bands?it.ai.bands.overall:0;
+    var div=document.createElement("div"); div.className="row";
+    if(TAB==="pending"){
+      div.innerHTML=
+        '<div class="band '+bandClass(b)+'"><b>'+fmtBand(b)+'</b><span>band</span></div>'+
+        '<div class="info">'+
+          '<div class="nm">'+esc(s.student||"Học viên")+' <span class="aitag">🤖 nháp AI</span></div>'+
+          '<div class="em">'+esc(s.email||"")+'</div>'+
+          '<div class="meta">'+
+            '<span class="tasktag">'+esc(s.task||"")+'</span>'+
+            '<span class="mt">🗓 '+fmtDate(s.submittedAt)+'</span>'+
+            (s.timeSpent?'<span class="mt">⏱ '+esc(s.timeSpent)+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<button class="btn primary">Chấm bài →</button>';
+    } else {
+      div.innerHTML=
+        '<div class="band '+bandClass(b)+'"><b>'+fmtBand(b)+'</b><span>band</span></div>'+
+        '<div class="info">'+
+          '<div class="nm">'+esc(s.student||"Học viên")+' <span class="aitag" style="color:#157a54;background:rgba(40,200,120,.16);border-color:rgba(120,230,170,.5)">✅ đã gửi</span></div>'+
+          '<div class="em">'+esc(s.email||"")+'</div>'+
+          '<div class="meta">'+
+            '<span class="tasktag">'+esc(s.task||"")+'</span>'+
+            '<span class="mt">📤 Gửi: '+fmtDate(it.sentAt)+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<button class="btn">Mở lại</button>';
+    }
+    div.querySelector("button").onclick=function(){ openGrade(it); };
+    host.appendChild(div);
+  });
+}
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function openGrade(it){
+  var pkg={ subId:it.subId, sub:it.sub, ai:it.ai };
+  var url="ielts_cham_bai.html#load="+b64encU(JSON.stringify(pkg));
+  toast("Đang mở bài của "+(it.sub.student||"học viên")+"...");
+  window.open(url,"_blank");
+}
+function newExam(t){ toast(t==="t1"?"Mở trình soạn đề Task 1...":"Mở trình soạn đề Task 2..."); window.open("ielts_cham_bai.html#new="+(t||"t2"),"_blank"); }
+function showHelp(){ document.getElementById("ovHelp").classList.add("on"); }
+function hideHelp(){ document.getElementById("ovHelp").classList.remove("on"); }
+
+function toggleFS(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); } else { (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+var tt; function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove("on");},2200); }
+
+render();
+</script>
+</body>
+</html>
