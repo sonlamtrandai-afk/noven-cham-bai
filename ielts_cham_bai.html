@@ -474,7 +474,7 @@ var DEFAULT = {
 var KEY = "ielts_grade_v1";
 var STATE, MODE = "teacher", LOCKED = false, ROLE = "grade", timerInt, startTs;
 var SUBMIT_WEBHOOK = "https://hook.us2.make.com/p5hs1ns66ico43nvrqtqsbsv1ga80t8m";
-var RETURN_WEBHOOK = ""; /* TODO: dán webhook Scenario 2 (trả bài cho học viên) vào đây sau */
+var RETURN_WEBHOOK = "https://hook.us2.make.com/8off9s6rc4y4i6ivwt6zeoc2cm3qml36"; /* Scenario 2 — trả bài cho học viên */
 
 /* ---- base64 UTF-8 (khớp với base64() của Make, an toàn dấu tiếng Việt) ---- */
 function b64encU(str){ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,function(_,p){return String.fromCharCode("0x"+p);})); }
@@ -482,12 +482,14 @@ function b64decU(b64){ return decodeURIComponent(Array.prototype.map.call(atob(b
 
 /* ---- Mở bằng link #load=... : tự nạp bài + nháp AI vào chế độ Chấm ---- */
 function loadFromHash(){
-  var h = location.hash || ""; var i = h.indexOf("load=");
-  if(i<0) return false;
+  var h = location.hash || "";
+  var rv = h.indexOf("review="), ld = h.indexOf("load=");
+  if(rv<0 && ld<0) return false;
   try{
-    var pkg = JSON.parse(b64decU(h.slice(i+5)));
+    var isReview = rv>=0;
+    var pkg = JSON.parse(b64decU(isReview ? h.slice(rv+7) : h.slice(ld+5)));
     if(pkg.state){
-      STATE = pkg.state;                 /* mở lại bài đã chấm: khôi phục đúng bản đã sửa */
+      STATE = pkg.state;                 /* mở lại / xem bản đã chấm: khôi phục đúng bản đã sửa */
     } else {
       STATE = {title:"Bài viết IELTS",task:"Writing Task 2",status:"draft",
         bands:{overall:0,c1:0,c2:0,c3:0,c4:0},summary:"",prompt:"",essay:"",
@@ -496,8 +498,12 @@ function loadFromHash(){
       if(pkg.ai) applyAI(pkg.ai);
     }
     if(pkg.subId!=null) STATE.subId = pkg.subId;   /* mã dòng trong Sheet để Make biết gửi/đánh dấu dòng nào */
-    MODE="teacher"; LOCKED=false; ROLE="grade";
-    document.body.classList.add("dashmode");        /* mở từ dashboard → ẩn nút của lối cũ cho gọn */
+    if(isReview){
+      LOCKED = true; ROLE = "review"; MODE = "student";   /* học viên xem kết quả: khoá, chỉ xem */
+    } else {
+      MODE="teacher"; LOCKED=false; ROLE="grade";
+      document.body.classList.add("dashmode");        /* mở từ dashboard → ẩn nút của lối cũ cho gọn */
+    }
     return true;
   }catch(e){ return false; }
 }
@@ -508,7 +514,9 @@ function sendToStudent(){
   if(!STATE.email){ toast("Bài này chưa có email học viên — bấm ⚙️ để thêm"); return; }
   if(!confirm("Gửi kết quả cho "+(STATE.student||"học viên")+"\nqua email: "+STATE.email+" ?")) return;
   STATE.status="graded";
-  var payload={ subId:STATE.subId||"", student:STATE.student||"", email:STATE.email, state:STATE };
+  var reviewData = b64encU(JSON.stringify({state:STATE, subId:STATE.subId||""}));
+  var payload={ subId:STATE.subId||"", student:STATE.student||"", email:STATE.email,
+    task:STATE.task||"", band:(STATE.bands?STATE.bands.overall:"")||"", reviewData:reviewData };
   if(!RETURN_WEBHOOK){ save(); renderAll(); toast("✅ Bản duyệt đã sẵn sàng. (Chưa nối Make — sẽ gửi thật sau khi dựng Scenario 2)"); return; }
   toast("📤 Đang gửi cho "+(STATE.student||"học viên")+"...");
   fetch(RETURN_WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})
