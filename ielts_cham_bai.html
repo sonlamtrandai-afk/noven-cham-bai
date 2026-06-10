@@ -365,6 +365,7 @@ body.newmode .teach-tool,body.newmode #statusBadge{display:none}
         <div class="fld"><label>Tiêu đề</label><input id="iTitle"></div>
         <div class="fld"><label>Học viên</label><input id="iStudent"></div>
       </div>
+      <div class="fld"><label>📧 Email học viên (nhận kết quả)</label><input id="iEmail" type="email" placeholder="vd: ban@gmail.com"></div>
       <div class="grid2">
         <div class="fld"><label>Loại bài</label><select id="iTask"><option>Writing Task 1</option><option>Writing Task 2</option></select></div>
         <div class="fld"><label>Band tổng (Overall)</label><input id="iOverall" type="number" step="0.5" min="0" max="9"></div>
@@ -746,7 +747,7 @@ function delComment(id){
 
 /* ============ SETTINGS / ESSAY MODAL ============ */
 function openSettings(){
-  var s=STATE; document.getElementById("iTitle").value=s.title; document.getElementById("iStudent").value=s.student;
+  var s=STATE; document.getElementById("iTitle").value=s.title; document.getElementById("iStudent").value=s.student; document.getElementById("iEmail").value=s.email||"";
   document.getElementById("iTask").value=s.task; document.getElementById("iOverall").value=s.bands.overall;
   document.getElementById("ic1").value=s.bands.c1; document.getElementById("ic2").value=s.bands.c2;
   document.getElementById("ic3").value=s.bands.c3; document.getElementById("ic4").value=s.bands.c4;
@@ -760,7 +761,7 @@ function openSettings(){
 }
 function saveSettings(){
   var s=STATE;
-  s.title=document.getElementById("iTitle").value; s.student=document.getElementById("iStudent").value;
+  s.title=document.getElementById("iTitle").value; s.student=document.getElementById("iStudent").value; s.email=document.getElementById("iEmail").value.trim();
   s.task=document.getElementById("iTask").value; s.bands.overall=+document.getElementById("iOverall").value;
   s.bands.c1=+document.getElementById("ic1").value; s.bands.c2=+document.getElementById("ic2").value;
   s.bands.c3=+document.getElementById("ic3").value; s.bands.c4=+document.getElementById("ic4").value;
