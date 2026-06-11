@@ -338,6 +338,48 @@ function hideHelp(){ document.getElementById("ovHelp").classList.remove("on"); }
 function toggleFS(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); } else { (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
 var tt; function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove("on");},2200); }
 
+/* ====== CHUẨN HÓA DỮ LIỆU TỪ SHEET ======
+   Webhook có thể trả field phẳng (submittedAt, student, email, prompt, essay, ai, sentAt)
+   hoặc đã gói sẵn {sub, ai}. Cột "Nhận xét AI" (ai) có thể là JSON chuẩn,
+   cục {"type":"text","text":...} của API, hoặc markdown thuần — hàm dưới lo hết. */
+function inferTask(p){
+  p=(p||"").toLowerCase();
+  return /table|chart|graph|diagram|\bmap\b|process|proportion|percentage of|figures? for/.test(p)
+    ? "Writing Task 1" : "Writing Task 2";
+}
+function parseAI(raw){
+  if(raw && typeof raw==="object" && !Array.isArray(raw)){
+    if(raw.bands) return raw;
+    if(raw.type==="text" && typeof raw.text==="string")
+      return { bands:{}, summary:raw.text, detail:{}, fixes:[], comments:[] };
+  }
+  var s=(raw==null?"":String(raw)).trim();
+  if(!s) return null;
+  s=s.replace(/^```json\s*/i,"").replace(/^```\s*/,"").replace(/```\s*$/,"").trim();
+  var obj=null; try{ obj=JSON.parse(s); }catch(e){}
+  if(obj && obj.bands) return obj;
+  if(obj && obj.type==="text" && typeof obj.text==="string")
+    return { bands:{}, summary:obj.text, detail:{}, fixes:[], comments:[] };
+  return { bands:{}, summary:s, detail:{}, fixes:[], comments:[] };
+}
+function normItem(it){
+  it=it||{};
+  var sub=it.sub||{};
+  sub.submittedAt = sub.submittedAt || it.submittedAt || "";
+  sub.student     = sub.student     || it.student     || "";
+  sub.email       = sub.email       || it.email       || "";
+  sub.prompt      = sub.prompt      || it.prompt      || "";
+  sub.essay       = sub.essay       || it.essay       || "";
+  sub.timeSpent   = sub.timeSpent   || it.timeSpent   || "";
+  if((it.image||sub.image) && !sub.image) sub.image = it.image||sub.image;
+  if(!sub.task)  sub.task  = inferTask(sub.prompt);
+  if(!sub.title) sub.title = "IELTS · "+sub.task;
+  var ai = parseAI(it.ai!=null ? it.ai : it.aiRaw);
+  if(!ai) ai = { bands:{}, summary:"(Chưa có nhận xét AI)", detail:{}, fixes:[], comments:[] };
+  return { subId: it.subId || sub.submittedAt || (sub.email+"|"+sub.submittedAt),
+           sub:sub, ai:ai, sentAt: it.sentAt || sub.sentAt || "" };
+}
+
 /* ====== TẢI DỮ LIỆU THẬT TỪ MAKE/SHEET ====== */
 function showLoading(){
   document.getElementById("list").innerHTML='<div class="empty"><div class="big">⏳</div>Đang tải bài từ Google Sheet…</div>';
@@ -360,8 +402,8 @@ function boot(){
   fetch(READ_URL,{cache:"no-store"})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
     .then(function(data){
-      PENDING = (data && data.pending) ? data.pending : [];
-      SENT    = (data && data.sent)    ? data.sent    : [];
+      PENDING = ((data && data.pending) ? data.pending : []).map(normItem);
+      SENT    = ((data && data.sent)    ? data.sent    : []).map(normItem);
       render();
       toast("Đã tải "+(PENDING.length+SENT.length)+" bài từ Sheet");
     })
