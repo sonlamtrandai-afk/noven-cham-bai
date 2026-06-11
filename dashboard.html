@@ -131,7 +131,7 @@ body.dark .tasktag{color:#f0b89c}
     <span class="ttl">Noven · Bảng chấm bài</span>
     <span class="sp"></span>
     <button class="tg" title="Hướng dẫn" onclick="showHelp()">ℹ️</button>
-    <button class="tg" title="Làm mới" onclick="render()">↻</button>
+    <button class="tg" title="Làm mới" onclick="boot()">↻</button>
     <button class="tg" title="Sáng / Tối" onclick="document.body.classList.toggle('dark')">🌙</button>
     <button class="tg" title="Toàn màn hình" onclick="toggleFS()">⛶</button>
   </div>
@@ -155,7 +155,7 @@ body.dark .tasktag{color:#f0b89c}
       <button id="tabSent" onclick="setTab('sent')">✅ Đã gửi</button>
     </div>
 
-    <div class="demo">🧪 Đây là bản xem trước với <b>dữ liệu mẫu</b>. Bấm “Chấm bài” để xem giao diện chấm mở ra đã điền sẵn. Khi nối Make xong, 2 danh sách này sẽ tự lấy bài thật từ Google Sheet.</div>
+    <div class="demo" id="demoBanner">🧪 Đây là bản xem trước với <b>dữ liệu mẫu</b>. Bấm “Chấm bài” để xem giao diện chấm mở ra đã điền sẵn. Khi nối Make xong, 2 danh sách này sẽ tự lấy bài thật từ Google Sheet.</div>
 
     <div class="list" id="list"></div>
   </div>
@@ -182,8 +182,16 @@ body.dark .tasktag{color:#f0b89c}
 /* base64 UTF-8 — khớp với base64() của Make (an toàn dấu tiếng Việt) */
 function b64encU(str){ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,function(_,p){return String.fromCharCode("0x"+p);})); }
 
-/* ====== DỮ LIỆU MẪU (sẽ thay bằng dữ liệu thật từ Make/Sheet) ====== */
-var PENDING = [
+/* ====== CẤU HÌNH ======
+   Dán link webhook "đọc" của Make vào READ_URL.
+   Để trống ("") => trang chạy bằng DỮ LIỆU MẪU như cũ. */
+var READ_URL = "";
+
+/* Dữ liệu thật sẽ được đổ vào 2 biến này khi fetch xong */
+var PENDING = [], SENT = [];
+
+/* ====== DỮ LIỆU MẪU (fallback khi READ_URL để trống) ====== */
+var DEMO_PENDING = [
   {
     subId: 101,
     sub:{ title:"IELTS · Writing Task 2 (Agree/Disagree)", task:"Writing Task 2",
@@ -242,7 +250,7 @@ var PENDING = [
 ];
 
 /* ====== BÀI ĐÃ GỬI (mẫu) — thật ra sẽ lấy bản cuối đã lưu trong Sheet ====== */
-var SENT = [
+var DEMO_SENT = [
   { subId:91, sentAt:"2026-06-09T09:15:00Z",
     sub:{ title:"IELTS · Writing Task 2", task:"Writing Task 2", student:"Phạm Gia Hân", email:"giahan@gmail.com", timeSpent:"41m 03s", submittedAt:"2026-06-08T14:00:00Z",
       prompt:"Many people believe that social media has a negative impact on society. Do you agree or disagree?",
@@ -330,7 +338,37 @@ function hideHelp(){ document.getElementById("ovHelp").classList.remove("on"); }
 function toggleFS(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); } else { (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
 var tt; function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove("on");},2200); }
 
-render();
+/* ====== TẢI DỮ LIỆU THẬT TỪ MAKE/SHEET ====== */
+function showLoading(){
+  document.getElementById("list").innerHTML='<div class="empty"><div class="big">⏳</div>Đang tải bài từ Google Sheet…</div>';
+}
+function showError(msg){
+  document.getElementById("list").innerHTML=
+    '<div class="empty"><div class="big">⚠️</div>Không tải được dữ liệu từ Sheet.'+
+    '<br><span style="font-size:12px;opacity:.8">'+esc(msg||"")+'</span><br><br>'+
+    '<button class="btn" onclick="boot()">↻ Thử lại</button></div>';
+}
+function boot(){
+  // Chưa gắn webhook => chạy bằng dữ liệu mẫu
+  if(!READ_URL){
+    PENDING = DEMO_PENDING; SENT = DEMO_SENT;
+    var db=document.getElementById("demoBanner"); if(db) db.style.display="";
+    render(); return;
+  }
+  var db=document.getElementById("demoBanner"); if(db) db.style.display="none";
+  showLoading();
+  fetch(READ_URL,{cache:"no-store"})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+    .then(function(data){
+      PENDING = (data && data.pending) ? data.pending : [];
+      SENT    = (data && data.sent)    ? data.sent    : [];
+      render();
+      toast("Đã tải "+(PENDING.length+SENT.length)+" bài từ Sheet");
+    })
+    .catch(function(e){ showError(e.message); });
+}
+
+boot();
 </script>
 </body>
 </html>
