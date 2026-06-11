@@ -128,7 +128,7 @@ body.dark .tasktag{color:#f0b89c}
 <div class="app">
   <div class="toolbar">
     <span class="dots"><i></i><i></i><i></i></span>
-    <span class="ttl">Noven · Bảng chấm bài</span>
+    <span class="ttl">NOV · Bảng chấm bài</span>
     <span class="sp"></span>
     <button class="tg" title="Hướng dẫn" onclick="showHelp()">ℹ️</button>
     <button class="tg" title="Làm mới" onclick="boot()">↻</button>
@@ -181,6 +181,34 @@ body.dark .tasktag{color:#f0b89c}
 <script>
 /* base64 UTF-8 — khớp với base64() của Make (an toàn dấu tiếng Việt) */
 function b64encU(str){ return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,function(_,p){return String.fromCharCode("0x"+p);})); }
+/* giải mã ngược lại — dùng để đọc "Bản gửi" (cột J = reviewData) của bài đã gửi */
+function b64decU(str){
+  try{ return decodeURIComponent(Array.prototype.map.call(atob(String(str||"").trim()),
+    function(c){ return "%"+("00"+c.charCodeAt(0).toString(16)).slice(-2); }).join("")); }
+  catch(e){ return ""; }
+}
+/* Dựng lại object "ai" (bands/summary/detail/fixes/comments) từ STATE giáo viên đã lưu.
+   STATE dùng annotations (vị trí ký tự) + comments (nối qua commentId); hàm này quy đổi
+   về đúng format "fixes" mà ielts_cham_bai.html vẫn nạp cho bản nháp — nên chắc ăn. */
+function aiFromState(st){
+  st = st||{};
+  var essay = st.essay||"";
+  var cmap = {}; (st.comments||[]).forEach(function(c){ if(c&&c.id!=null) cmap[c.id]=c; });
+  var used = {};
+  var fixes = (st.annotations||[]).map(function(a){
+    var c = (a.commentId!=null ? cmap[a.commentId] : null) || {};
+    if(a.commentId!=null) used[a.commentId] = true;
+    var o = { find: essay.slice(a.start, a.end), type: a.type||"mark",
+              cat: a.cat || c.cat || "", note: c.body || "" };
+    if(o.type==="fix") o.fix = a.rep||"";
+    return o;
+  });
+  // comment chung (praise/grammar/vocab/coh) = những comment KHÔNG gắn với chỗ gạch nào
+  var comments = (st.comments||[]).filter(function(c){ return c&&!used[c.id]; })
+                  .map(function(c){ return { cat:c.cat, body:c.body }; });
+  return { bands: st.bands||{}, summary: st.summary||"", detail: st.detail||{},
+           fixes: fixes, comments: comments };
+}
 
 /* ====== CẤU HÌNH ======
    Dán link webhook "đọc" của Make vào READ_URL.
@@ -326,9 +354,28 @@ function render(){
 function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function openGrade(it){
-  var pkg={ subId:it.subId, sub:it.sub, ai:it.ai };
+  var sub = it.sub, ai = it.ai;
+  // Bài đã gửi: ưu tiên "Bản gửi" (cột J) = bản giáo viên đã sửa, thay cho bản nháp AI
+  if(it.reviewData){
+    try{
+      var rd = JSON.parse(b64decU(it.reviewData));
+      var st = (rd && rd.state) ? rd.state : rd;       // reviewData = {state, subId}
+      if(st && (st.annotations || st.bands)){
+        ai = aiFromState(st);
+        sub = {
+          title: st.title||sub.title, task: st.task||sub.task,
+          student: st.student||sub.student, email: st.email||sub.email,
+          prompt: st.prompt||sub.prompt, essay: st.essay||sub.essay,
+          image: st.image||sub.image,
+          timeSpent: (st.meta&&st.meta.timeSpent)||sub.timeSpent||"",
+          submittedAt: (st.meta&&st.meta.submittedAt)||sub.submittedAt||""
+        };
+      }
+    }catch(e){ /* lỗi giải mã → giữ nguyên bản nháp AI cho an toàn */ }
+  }
+  var pkg={ subId:it.subId, sub:sub, ai:ai };
   var url="ielts_cham_bai.html#load="+b64encU(JSON.stringify(pkg));
-  toast("Đang mở bài của "+(it.sub.student||"học viên")+"...");
+  toast("Đang mở bài của "+(sub.student||"học viên")+"...");
   window.open(url,"_blank");
 }
 function newExam(t){ toast(t==="t1"?"Mở trình soạn đề Task 1...":"Mở trình soạn đề Task 2..."); window.open("ielts_cham_bai.html#new="+(t||"t2"),"_blank"); }
@@ -377,7 +424,8 @@ function normItem(it){
   var ai = parseAI(it.ai!=null ? it.ai : it.aiRaw);
   if(!ai) ai = { bands:{}, summary:"(Chưa có nhận xét AI)", detail:{}, fixes:[], comments:[] };
   return { subId: it.subId || sub.submittedAt || (sub.email+"|"+sub.submittedAt),
-           sub:sub, ai:ai, sentAt: it.sentAt || sub.sentAt || "" };
+           sub:sub, ai:ai, sentAt: it.sentAt || sub.sentAt || "",
+           reviewData: it.reviewData || sub.reviewData || "" };
 }
 
 /* ====== TẢI DỮ LIỆU THẬT TỪ MAKE/SHEET ====== */
