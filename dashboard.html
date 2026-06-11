@@ -193,6 +193,9 @@ function b64decU(str){
 function aiFromState(st){
   st = st||{};
   var essay = st.essay||"";
+  // ielts_cham_bai tự thêm "🤖 (nháp AI) " mỗi lần nạp → mở lại bản đã lưu sẽ bị nhân đôi.
+  // Lau sạch các tiền tố này ở đầu summary để sau khi nạp chỉ còn đúng 1 cái.
+  var summary = String(st.summary||"").replace(/^(?:\s*[\uD800-\uDFFF]*\s*\(nháp AI\)\s*)+/, "").trim();
   var cmap = {}; (st.comments||[]).forEach(function(c){ if(c&&c.id!=null) cmap[c.id]=c; });
   var used = {};
   var fixes = (st.annotations||[]).map(function(a){
@@ -206,7 +209,7 @@ function aiFromState(st){
   // comment chung (praise/grammar/vocab/coh) = những comment KHÔNG gắn với chỗ gạch nào
   var comments = (st.comments||[]).filter(function(c){ return c&&!used[c.id]; })
                   .map(function(c){ return { cat:c.cat, body:c.body }; });
-  return { bands: st.bands||{}, summary: st.summary||"", detail: st.detail||{},
+  return { bands: st.bands||{}, summary: summary, detail: st.detail||{},
            fixes: fixes, comments: comments };
 }
 
