@@ -122,6 +122,21 @@ body.dark .tasktag{color:#f0b89c}
 .mb{padding:18px 20px;font-size:15px}
 .mb ol{margin:6px 0 0;padding-left:20px}
 .mb li{margin:6px 0}
+
+/* ===== Khoá mềm — màn nhập mật khẩu (Bước 6) ===== */
+.gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg) fixed}
+.gate.hide{display:none}
+.gate .glass{position:relative;z-index:1;max-width:380px;width:100%;text-align:center;background:var(--card);backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:34px 30px}
+.gate .lock{font-size:40px;margin-bottom:6px}
+.gate h2{font-family:'Lora',serif;font-size:22px;color:var(--ink-strong);margin:0 0 4px}
+.gate p{font-size:13.5px;color:var(--muted);margin:0 0 20px}
+.gate input{width:100%;font-family:inherit;font-size:16px;text-align:center;letter-spacing:2px;color:var(--ink-strong);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:13px 14px;outline:none;transition:.15s}
+.gate input:focus{border-color:var(--rust);box-shadow:0 0 0 3px rgba(177,74,40,.16)}
+.gate button{width:100%;margin-top:12px;border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:15px;color:#fff;background:linear-gradient(145deg,#c75a34,#9c3d1e);border-radius:12px;padding:13px;box-shadow:0 4px 12px rgba(150,60,30,.32);transition:.15s}
+.gate button:hover{transform:translateY(-1px)}
+.gate .err{min-height:18px;margin-top:12px;font-size:13px;color:#c0392b;font-weight:600;opacity:0;transition:.15s}
+.gate .err.on{opacity:1}
+body.dark .gate .err{color:#f0937a}
 </style>
 </head>
 <body>
@@ -177,6 +192,19 @@ body.dark .tasktag{color:#f0b89c}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ===== Khoá mềm: màn nhập mật khẩu trước khi vào dashboard ===== -->
+<div class="gate" id="gate">
+  <div class="glass">
+    <div class="lock">🔒</div>
+    <h2>NOV · Bảng chấm bài</h2>
+    <p>Khu vực giáo viên. Nhập mật khẩu để vào.</p>
+    <input id="pwInput" type="password" placeholder="Mật khẩu" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button onclick="tryUnlock()">Vào dashboard →</button>
+    <div class="err" id="pwErr">Sai mật khẩu rồi, thử lại nha.</div>
+  </div>
+</div>
 
 <script>
 /* base64 UTF-8 — khớp với base64() của Make (an toàn dấu tiếng Việt) */
@@ -461,7 +489,42 @@ function boot(){
     .catch(function(e){ showError(e.message); });
 }
 
-boot();
+/* ===== KHOÁ MỀM (Bước 6) =====
+   Bảo vệ nhẹ phía trình duyệt cho khu vực giáo viên.
+   Đổi mật khẩu: thay PW_HASH bên dưới = SHA-256 (hex) của mật khẩu mới.
+   Mật khẩu mặc định hiện tại = "nov2026".
+   Lưu ý: đây là KHOÁ MỀM (chặn người vô tình mở), KHÔNG phải bảo mật thật —
+   ai mở source vẫn thấy, và link đọc Sheet vẫn gọi trực tiếp được. */
+var PW_HASH = "cde246027c7b0d242a07cc8085fb57c8e4a71efa13dc0c8ab6cf8f3f80791f7a"; // = SHA-256("nov2026")
+var PW_KEY  = "nov_dash_ok";
+
+async function sha256hex(s){
+  var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0"+b.toString(16)).slice(-2); }).join("");
+}
+function unlock(){
+  var g=document.getElementById("gate"); if(g) g.classList.add("hide");
+  boot();
+}
+async function tryUnlock(){
+  var inp=document.getElementById("pwInput"), err=document.getElementById("pwErr"), h="";
+  try{ h = await sha256hex(inp.value||""); }catch(e){ h=""; }
+  if(h===PW_HASH){
+    try{ sessionStorage.setItem(PW_KEY, PW_HASH); }catch(e){}
+    if(err) err.classList.remove("on");
+    unlock();
+  } else {
+    if(err) err.classList.add("on");
+    inp.value=""; inp.focus();
+  }
+}
+function gateInit(){
+  var ok=false;
+  try{ ok = (sessionStorage.getItem(PW_KEY)===PW_HASH); }catch(e){}
+  if(ok){ unlock(); }
+  else{ var inp=document.getElementById("pwInput"); if(inp) inp.focus(); }
+}
+gateInit();
 </script>
 </body>
 </html>
